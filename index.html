@@ -16,125 +16,10 @@
             width: 980px;
             height: 793px;
         }
-        .map-title-bar {
-            width: 980px;
-            box-sizing: border-box;
-            padding: 10px 14px;
-            font: bold 19px/1.3 Arial, Helvetica, sans-serif;
-            color: #1a1a1a;
-            background: #f7f7f7;
-            border: 1px solid #ddd;
-            border-bottom: none;
-        }
-        .map-title-bar .subtitle {
-            font: normal 12px/1.3 Arial, Helvetica, sans-serif;
-            color: #666;
-            margin-top: 2px;
-        }
-        .info.legend {
-            background: rgba(255,255,255,0.92);
-            border-radius: 6px;
-            box-shadow: 0 1px 5px rgba(0,0,0,0.4);
-            font: 13px/1.4 Arial, Helvetica, sans-serif;
-            color: #222;
-            max-width: 220px;
-            overflow: hidden;
-        }
-        .legend-toggle {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 8px 10px;
-            cursor: pointer;
-            user-select: none;
-            font-weight: bold;
-            font-size: 13px;
-        }
-        .legend-toggle .arrow {
-            transition: transform 0.15s ease;
-            font-size: 11px;
-            margin-left: 8px;
-        }
-        .info.legend.collapsed .legend-toggle .arrow {
-            transform: rotate(-90deg);
-        }
-        .legend-body {
-            padding: 0 12px 10px;
-            max-height: 500px;
-            transition: max-height 0.15s ease;
-        }
-        .info.legend.collapsed .legend-body {
-            max-height: 0;
-            padding-top: 0;
-            padding-bottom: 0;
-            overflow: hidden;
-        }
-        .info.legend h4 {
-            margin: 0 0 6px;
-            font-size: 13px;
-            font-weight: bold;
-        }
-        .legend-section + .legend-section {
-            margin-top: 10px;
-            padding-top: 8px;
-            border-top: 1px solid #ddd;
-        }
-        .legend-row {
-            display: flex;
-            align-items: center;
-            margin-bottom: 3px;
-        }
-        .legend-swatch {
-            width: 16px;
-            height: 16px;
-            margin-right: 6px;
-            border: 1px solid rgba(35,35,35,0.6);
-            flex-shrink: 0;
-        }
-        .legend-dot {
-            width: 14px;
-            height: 14px;
-            border-radius: 50%;
-            margin-right: 6px;
-            border: 1px solid rgba(35,35,35,0.6);
-            flex-shrink: 0;
-        }
-        .pie-marker {
-            border-radius: 50%;
-            border: 1px solid rgba(35,35,35,0.75);
-            box-shadow: 0 0 2px rgba(0,0,0,0.5);
-        }
-        .popup-title {
-            font-size: 14px;
-            font-weight: bold;
-            margin-bottom: 4px;
-        }
-        .popup-table td {
-            padding: 1px 4px;
-        }
-        .popup-table td.label {
-            color: #555;
-        }
-        .popup-bar-wrap {
-            width: 140px;
-            height: 8px;
-            border-radius: 4px;
-            overflow: hidden;
-            background: #de77ae;
-            margin-top: 2px;
-        }
-        .popup-bar-men {
-            height: 8px;
-            background: #3182bd;
-        }
         </style>
         <title></title>
     </head>
     <body>
-        <div class="map-title-bar">
-            Население по области на България
-            <div class="subtitle">Обща численост, разпределение по пол и гъстота на населението</div>
-        </div>
         <div id="map">
         </div>
         <script src="js/qgis2web_expressions.js"></script>
@@ -235,25 +120,53 @@
         function setBounds() {
         }
         function pop__0(feature, layer) {
-            var p = feature.properties;
-            var total = parseInt(p['Общо'], 10) || 0;
-            var men = parseInt(p['Мъже'], 10) || 0;
-            var women = parseInt(p['Жени'], 10) || 0;
-            var menPct = total ? Math.round((men / total) * 100) : 0;
-            var womenPct = total ? (100 - menPct) : 0;
-            var name = p['Name_BG'] !== null ? String(p['Name_BG']) : '';
-            var density = p['Density'] !== null ? String(p['Density']) : '';
-            var area = p['Area'] !== null && p['Area'] !== undefined ? Math.round(parseFloat(p['Area'])) : null;
-            var popupContent =
-                '<div class="popup-title">' + autolinker.link(name.replace(/'/g, '\'')) + '</div>' +
-                '<table class="popup-table">' +
-                    '<tr><td class="label">Общо население:</td><td><b>' + total.toLocaleString('bg-BG') + '</b></td></tr>' +
-                    '<tr><td class="label">Мъже:</td><td>' + men.toLocaleString('bg-BG') + ' (' + menPct + '%)</td></tr>' +
-                    '<tr><td class="label">Жени:</td><td>' + women.toLocaleString('bg-BG') + ' (' + womenPct + '%)</td></tr>' +
-                    '<tr><td class="label">Площ:</td><td>' + (area !== null ? area.toLocaleString('bg-BG') + ' km²' : '') + '</td></tr>' +
-                    '<tr><td class="label">Средна гъстота:</td><td>' + density + ' души/km²</td></tr>' +
-                '</table>' +
-                '<div class="popup-bar-wrap"><div class="popup-bar-men" style="width:' + menPct + '%"></div></div>';
+            var popupContent = '<table>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['EKATTE'] !== null ? autolinker.link(String(feature.properties['EKATTE']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Name_BG'] !== null ? autolinker.link(String(feature.properties['Name_BG']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Name_EN'] !== null ? autolinker.link(String(feature.properties['Name_EN']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Reg_Code'] !== null ? autolinker.link(String(feature.properties['Reg_Code']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Dist_Code'] !== null ? autolinker.link(String(feature.properties['Dist_Code']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Perimeter'] !== null ? autolinker.link(String(feature.properties['Perimeter']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Area'] !== null ? autolinker.link(String(feature.properties['Area']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Center_BG'] !== null ? autolinker.link(String(feature.properties['Center_BG']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Center_EN'] !== null ? autolinker.link(String(feature.properties['Center_EN']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Shape__Are'] !== null ? autolinker.link(String(feature.properties['Shape__Are']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Shape__Len'] !== null ? autolinker.link(String(feature.properties['Shape__Len']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Общо'] !== null ? autolinker.link(String(feature.properties['Общо']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Мъже'] !== null ? autolinker.link(String(feature.properties['Мъже']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Жени'] !== null ? autolinker.link(String(feature.properties['Жени']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Density'] !== null ? autolinker.link(String(feature.properties['Density']).replace(/'/g, '\'').toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
             var content = removeEmptyRowsFromPopupContent(popupContent, feature);
 			layer.on('popupopen', function(e) {
 				addClassToPopupIfMedia(content, e.popup);
@@ -624,95 +537,6 @@
         });
         bounds_group.addLayer(layer__0);
         map.addLayer(layer__0);
-
-        // ---- Диаграми (кръгови - мъже/жени) за всяка област ----
-        var MEN_COLOR = '#3182bd';
-        var WOMEN_COLOR = '#de77ae';
-        var pieMinRadius = 14, pieMaxRadius = 34;
-        var totals = json__0.features.map(function(f) {
-            return parseInt(f.properties['Общо'], 10) || 0;
-        });
-        var minTotal = Math.min.apply(null, totals);
-        var maxTotal = Math.max.apply(null, totals);
-
-        function pieRadius(total) {
-            if (maxTotal === minTotal) return (pieMinRadius + pieMaxRadius) / 2;
-            var t = (total - minTotal) / (maxTotal - minTotal);
-            return pieMinRadius + Math.sqrt(t) * (pieMaxRadius - pieMinRadius);
-        }
-
-        function pieIcon(men, women, radius) {
-            var total = men + women;
-            var menPct = total ? (men / total * 100) : 50;
-            var size = radius * 2;
-            var html = '<div class="pie-marker" style="width:' + size + 'px;height:' + size + 'px;' +
-                'background:conic-gradient(' + MEN_COLOR + ' 0% ' + menPct + '%, ' + WOMEN_COLOR + ' ' + menPct + '% 100%);"></div>';
-            return L.divIcon({
-                className: '',
-                html: html,
-                iconSize: [size, size],
-                iconAnchor: [size / 2, size / 2]
-            });
-        }
-
-        var diagramLayer = new L.layerGroup([]);
-        layer__0.eachLayer(function(featLayer) {
-            var p = featLayer.feature.properties;
-            var men = parseInt(p['Мъже'], 10) || 0;
-            var women = parseInt(p['Жени'], 10) || 0;
-            var total = men + women;
-            var center = featLayer.getBounds().getCenter();
-            var marker = L.marker(center, {
-                icon: pieIcon(men, women, pieRadius(total)),
-                interactive: true,
-                pane: 'pane__0',
-                zIndexOffset: 1000
-            });
-            pop__0(featLayer.feature, marker);
-            diagramLayer.addLayer(marker);
-        });
-        diagramLayer.addTo(map);
-
-        // ---- Легенда ----
-        var densityClasses = [
-            { range: '26 – 31', color: 'rgba(255,247,251,1.0)' },
-            { range: '33 – 34', color: 'rgba(236,231,242,1.0)' },
-            { range: '35 – 40', color: 'rgba(208,209,230,1.0)' },
-            { range: '42 – 45', color: 'rgba(166,189,219,1.0)' },
-            { range: '46 – 49', color: 'rgba(116,169,207,1.0)' },
-            { range: '50 – 51', color: 'rgba(54,144,192,1.0)' },
-            { range: '53 – 60', color: 'rgba(5,112,176,1.0)' },
-            { range: '73 – 111', color: 'rgba(4,90,141,1.0)' },
-            { range: '123 – 973', color: 'rgba(2,56,88,1.0)' }
-        ];
-
-        var legend = L.control({ position: 'bottomright' });
-        legend.onAdd = function() {
-            var div = L.DomUtil.create('div', 'info legend');
-            var body = '<div class="legend-section">';
-            body += '<h4>Гъстота на населението</h4>';
-            body += '<div style="font-size:11px;color:#555;margin-bottom:4px;">души / km²</div>';
-            densityClasses.forEach(function(c) {
-                body += '<div class="legend-row"><span class="legend-swatch" style="background:' + c.color + '"></span>' + c.range + '</div>';
-            });
-            body += '</div>';
-            body += '<div class="legend-section">';
-            body += '<h4>Диаграма: пол</h4>';
-            body += '<div class="legend-row"><span class="legend-dot" style="background:' + MEN_COLOR + '"></span>Мъже</div>';
-            body += '<div class="legend-row"><span class="legend-dot" style="background:' + WOMEN_COLOR + '"></span>Жени</div>';
-            body += '<div style="font-size:11px;color:#555;margin-top:2px;">размерът на кръга = общо население</div>';
-            body += '</div>';
-            div.innerHTML =
-                '<div class="legend-toggle">Легенда<span class="arrow">▼</span></div>' +
-                '<div class="legend-body">' + body + '</div>';
-            L.DomEvent.disableClickPropagation(div);
-            div.querySelector('.legend-toggle').addEventListener('click', function() {
-                div.classList.toggle('collapsed');
-            });
-            return div;
-        };
-        legend.addTo(map);
-
         setBounds();
         </script>
     </body>
