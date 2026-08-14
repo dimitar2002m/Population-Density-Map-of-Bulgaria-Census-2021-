@@ -175,6 +175,19 @@ body {
             zoomControl:false, maxZoom:28, minZoom:1
         }).fitBounds([[40.16142235465851,20.735380840416422],[45.46281301965177,29.67918868270054]]);
         var hash = new L.Hash(map);
+
+        // В iframe (Maps.html): скрий заглавието и покажи цяла България
+        if (window.self !== window.top) {
+            var titleBar = document.querySelector('.map-title-bar');
+            if (titleBar) titleBar.style.display = 'none';
+            setTimeout(function () {
+                map.invalidateSize();
+                map.fitBounds([[40.16, 20.74], [45.46, 29.68]]);
+                var legendEl = document.querySelector('.info.legend');
+                if (legendEl) legendEl.classList.add('collapsed');
+            }, 300);
+        }
+
         map.attributionControl.setPrefix('<a href="https://github.com/qgis2web/qgis2web" target="_blank">qgis2web</a> &middot; <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a> &middot; <a href="https://qgis.org">QGIS</a>');
         var autolinker = new Autolinker({truncate: {length: 30, location: 'smart'}});
         // remove popup's row if "visible-with-data"
